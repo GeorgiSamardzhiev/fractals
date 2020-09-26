@@ -1,0 +1,88 @@
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%
+        }
+    </style>
+    <script src="three.min.js"></script>
+    <script src="turtle.js"></script>
+</head>
+
+<body>
+    <script>
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const scene = new THREE.Scene();
+
+        const len = 10;
+        const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, len * 2.5);
+
+        const turtle = new Turtle(-len / 2, len * Math.sqrt(3) / 6, 0);
+
+        function kochSegment(len, level) {
+            if (level) {
+                kochSegment(len / 3, level - 1);
+                turtle.lt(60);
+                kochSegment(len / 3, level - 1);
+                turtle.rt(120);
+                kochSegment(len / 3, level - 1);
+                turtle.lt(60);
+                kochSegment(len / 3, level - 1);
+            } else {
+                turtle.fd(len);
+            }
+        }
+
+        function kochSnowflake(level) {
+            turtle.resetGeometry();
+            turtle.fd(0);
+
+            for (let i = 0; i < 3; i++) {
+                kochSegment(len, level);
+                turtle.rt(120);
+            }
+            return new THREE.Line(turtle.geometry, new THREE.LineBasicMaterial({ color: 'green' }));
+        }
+
+        let line = kochSnowflake(0);
+        scene.add(line);
+
+        renderer.render(scene, camera);
+
+        let t = 1;
+        let lev = 1;
+
+        function drawFrame() {
+            requestAnimationFrame(drawFrame);
+            if (animate) {
+                animate(t++);
+            }
+            renderer.render(scene, camera);
+        }
+
+        function animate(t) {
+            if (t % 50 === 0) {
+                scene.remove(line);
+                line = kochSnowflake(lev++);
+                scene.add(line);
+                if (lev > 9) {
+                    lev = 0;
+                }
+            }
+        }
+
+        drawFrame();
+    </script>
+</body>
+
+</html>
