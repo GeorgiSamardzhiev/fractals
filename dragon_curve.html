@@ -12,48 +12,30 @@
         }
     </style>
     <script src="three.min.js"></script>
+    <script src="turtle.js"></script>
 </head>
 
 <body>
     <script>
-        let renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        let scene = new THREE.Scene();
+        const scene = new THREE.Scene();
 
-        let camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 0, 27);
 
-        let geometry = new THREE.Geometry();
+        const turtle = new Turtle(-5, -2, 0);
 
-        function fd(d) {
-            x += d * Math.cos(dir);
-            y += d * Math.sin(dir);
-
-            geometry.vertices.push(new THREE.Vector3(x, y, 0));
-        }
-
-        function lt(a) {
-            dir += a * Math.PI / 180;
-        }
-
-        function rt(a) {
-            lt(-a);
-        }
-
-        let x = -5; // начална позиция по X
-        let y = -2; // начална позиция по Y
-        let dir = 0; // начална посока в радиани
-        let len = 0.05;
+        const len = 0.05;
 
         function cell(swap) {
-            fd(len);
-            lt(90 * swap);
+            turtle.fd(len);
+            turtle.lt(90 * swap);
         }
 
         function dragon(level, swap = -1) {
-            renderer.render(scene, camera);
             if (level) {
                 dragon(level - 1, swap);
                 cell(swap);
@@ -71,7 +53,7 @@
 
         dragon(16);
 
-        let line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 'cyan' }));
+        const line = new THREE.Line(turtle.geometry, new THREE.LineBasicMaterial({ color: 'cyan' }));
         scene.add(line);
 
         renderer.render(scene, camera);
